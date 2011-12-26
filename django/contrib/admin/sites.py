@@ -14,6 +14,8 @@ from django.utils.text import capfirst
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
 from django.conf import settings
+from django.http import HttpResponseRedirect
+
 
 LOGIN_FORM_KEY = 'this_is_the_login_form'
 
@@ -188,6 +190,8 @@ class AdminSite(object):
         """
         def inner(request, *args, **kwargs):
             if not self.has_permission(request):
+                if request.path.endswith(reverse('admin:logout')):
+                    return HttpResponseRedirect(reverse('admin:index'))
                 return self.login(request)
             return view(request, *args, **kwargs)
         if not cacheable:
